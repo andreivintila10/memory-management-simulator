@@ -1,0 +1,5 @@
+edu/mep/memory_management_simulation/Process.class
+edu/mep/memory_management_simulation/Partition.class
+edu/mep/memory_management_simulation/Simulation.class
+edu/mep/memory_management_simulation/MemoryMap.class
+edu/mep/memory_management_simulation/MemoryManager.class
