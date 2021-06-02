@@ -1,0 +1,93 @@
+#fixedBar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 65px;
+    background-color: white;
+    border-bottom: 1px solid black;
+}
+
+.glyphicon {
+    font-size: 40px;
+    margin-top: 10px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.glyphicon-play {
+    color: green;
+}
+
+.glyphicon-pause {
+    color: red;
+}
+
+.glyphicon-repeat {
+    color: black;
+}
+
+input[name="simulation_period"] {
+
+}
+
+#simulation-container {
+    width: 100%;
+    margin-top: 100px;
+}
+
+#processes-wrapper {
+    width: 626px;
+    float: left;
+    margin: 100px 50px 0px 50px;
+}
+
+.process-container {
+    margin-top: 50px;
+}
+
+.queue {
+    min-height: 50px;
+    border: 1px solid lightgrey;
+}
+
+.process {
+    width: 50px;
+    height: 50px;
+    background-color: lightgrey;
+    display: inline-block;
+    text-align: center;
+    line-height: 50px;
+    margin: 1px;
+}
+
+#memory-container {
+    width: 250px;
+    float: left;
+}
+
+#memory {
+    width: 250px;
+    height: 20000px;
+}
+
+.partition {
+    min-height: 20px;
+    border: 1px solid lightgrey;
+    text-align: center;
+}
+
+.free {
+    background-color: limegreen;
+}
+
+.allocated {
+    background-color: orangered;
+}
+
+.my-label {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 10px;
+}

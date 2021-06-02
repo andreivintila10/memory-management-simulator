@@ -2,12 +2,12 @@ package edu.mep.memory_management_simulation;
 
 public class Partition {
 	private int index;
-	private int base;
-	private int limit;
+	private long base;
+	private long limit;
 	private int currentProcess;
 	private boolean inUse;
 
-	public Partition(int index, int base, int limit, int currentProcess, boolean inUse) {
+	public Partition(int index, long base, long limit, int currentProcess, boolean inUse) {
 		this.index = index;
 		this.base = base;
 		this.limit = limit;
@@ -15,7 +15,7 @@ public class Partition {
 		this.inUse = inUse;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return this.limit - this.base + 1;
 	}
 	
@@ -27,19 +27,19 @@ public class Partition {
 		this.index = index;
 	}
 
-	public int getBase() {
+	public long getBase() {
 		return base;
 	}
 
-	public void setBase(int base) {
+	public void setBase(long base) {
 		this.base = base;
 	}
 
-	public int getLimit() {
+	public long getLimit() {
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public void setLimit(long limit) {
 		this.limit = limit;
 	}
 

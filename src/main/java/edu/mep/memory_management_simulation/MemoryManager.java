@@ -1,13 +1,14 @@
 package edu.mep.memory_management_simulation;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MemoryManager {
-	private int memorySize;
+	private long memorySize;
 	private int pageSize;
 	private MemoryMap memoryMap;
 
-	public MemoryManager(int memorySize, int pageSize) {
+	public MemoryManager(long memorySize, int pageSize) {
 		this.memorySize = memorySize;
 		this.pageSize = pageSize;
 		ArrayList<Partition> memorySpace = new ArrayList<Partition>();
@@ -15,12 +16,24 @@ public class MemoryManager {
 		memoryMap = new MemoryMap(memorySpace);
 	}
 
-	public boolean allocateMemory(Process process) {
-		return memoryMap.allocateMemory(process.getId(), process.getSize(), this.pageSize);
+	public boolean allocateMemory(Process process, PageFitting pageFitting) {
+		return memoryMap.allocateMemory(process.getId(), process.getSize(), this.pageSize, pageFitting);
 	}
 
 	public void deallocateMemory(Process process) {
 		memoryMap.deallocateMemory(process.getId());
+	}
+
+	public int pageReplacement(Process[] runningProcesses, Random randomPage) {
+		return memoryMap.randomPageReplacement(runningProcesses, randomPage);
+	}
+
+	public void defragmentMemory() {
+		memoryMap.defragmentMemory();
+	}
+
+	public boolean searchMemory(int processID) {
+		return memoryMap.searchPartition(processID);
 	}
 
 	public void printMemoryMap() {

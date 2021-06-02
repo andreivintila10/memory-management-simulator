@@ -10,22 +10,22 @@ public class ProcessTest {
 	private Process process;
 	private int id;
 	private int size;
-	private int startTime;
-	private int duration;
+	private int arrivalTime;
+	private int burstTime;
 
 	@Before
 	public void setUp() throws Exception {
 		id = 1;
 		size = 100;
-		startTime = 0;
-		duration = 150;
+		arrivalTime = 0;
+		burstTime = 150;
 
-		process = new Process(id, size, startTime, duration);
+		process = new Process(id, size, arrivalTime, burstTime);
 	}
 
 	@Test
 	public void testToString() {
-		String expected = "Process [id=" + id + ", size=" + size + ", startTime=" + startTime + ", duration=" + duration + "]";
+		String expected = "Process [id=" + id + ", size=" + size + ", arrivalTime=" + arrivalTime + ", burstTime=" + burstTime + ", status=" + process.getStatus() + "]";
 		assertEquals(process.toString(), expected);
 	}
 

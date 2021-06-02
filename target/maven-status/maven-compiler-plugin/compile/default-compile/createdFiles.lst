@@ -1,5 +1,12 @@
+edu/mep/memory_management_simulation/MemoryMap$1.class
+edu/mep/memory_management_simulation/PageFitting.class
+edu/mep/memory_management_simulation/GenerateProcesses.class
+edu/mep/memory_management_simulation/Event$1.class
+edu/mep/memory_management_simulation/Event.class
 edu/mep/memory_management_simulation/Process.class
 edu/mep/memory_management_simulation/Partition.class
 edu/mep/memory_management_simulation/Simulation.class
+edu/mep/memory_management_simulation/Status.class
 edu/mep/memory_management_simulation/MemoryMap.class
+edu/mep/memory_management_simulation/EventType.class
 edu/mep/memory_management_simulation/MemoryManager.class
