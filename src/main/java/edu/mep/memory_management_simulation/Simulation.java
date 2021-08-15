@@ -11,12 +11,13 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Simulation {
-	private long memorySize = 16670486528L;
-	private int pageSize = 4096;
-	private int timeSlice = 2;
-	private int noOfParallelProcesses = 8;
+	private final long memorySize = 16670486528L;
+	private final int pageSize = 4096;
+	private final int timeSlice = 2;
+	private final int noOfParallelProcesses = 8;
+	private final PageFitting pageFitting = PageFitting.FIRST;
+
 	private int notFitted = 0;
-	private PageFitting pageFitting = PageFitting.FIRST;
 
 	public ArrayList<Process> getProcesses() throws FileNotFoundException {
 		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/memory_management_simulation/input-processes-generated.txt";

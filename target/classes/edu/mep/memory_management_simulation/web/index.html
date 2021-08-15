@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ro">
+    <head>
+        <title>Simularea Memoriei Primare</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="js/simulation-history.js"></script>
+    </head>
+
+    <body>
+        <script>
+            const number_of_events = events.length;
+
+            const size_of_MB = 1048576;
+            const memory_size_B = 16670486528;
+            const memory_size_MB = 16670486528 / size_of_MB;
+            const partitionHeightRatio = 50;
+            const partitionMinHeight = 15;
+        </script>
+
+        <div id="fixedBar">
+            <span class="glyphicon glyphicon-play"></span>
+            <span class="glyphicon glyphicon-pause" style="display: none"></span>
+            <span class="glyphicon glyphicon-repeat" style="display: none"></span>
+        </div>
+        <div id="simulation-container">
+            <div id="processes-wrapper">
+                <label for="simulation_period">Simulation step: </label>
+                <input type="text" name="simulation_period" value="20" placeholder="100" />
+                <div class="process-container">
+                    <div class="my-label">Coada de procesare</div>
+                    <div class="queue"></div>
+                </div>
+
+                <div class="process-container">
+                    <div class="my-label">Coada de asteptare</div>
+                    <div class="queue"></div>
+                </div>
+            </div>
+
+            <div id="memory-container">
+                <div class="my-label">Memorie</div>
+                <div id="memory">
+                    <div class="partition free" style="height: 500px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const inputPeriod = document.getElementsByTagName("input")[0];
+
+            const memory = document.getElementById("memory");
+            const readyQ = document.getElementsByClassName("queue")[0];
+            const blockedQ = document.getElementsByClassName("queue")[1];
+            memory.getElementsByClassName("partition")[0].innerHTML = memory_size_MB.toFixed(2) + " MB";
+
+            const playButton = document.getElementsByClassName("glyphicon-play")[0];
+            const pauseButton = document.getElementsByClassName("glyphicon-pause")[0];
+            const resetButton = document.getElementsByClassName("glyphicon-repeat")[0];
+
+            playButton.addEventListener("click", runSimulation, true);
+            pauseButton.addEventListener("click", pauseSimulation, true);
+            resetButton.addEventListener("click", resetSimulation, true);
+
+            function hideElement(element) {
+                element.style.display = "none";
+            }
+
+            function showElement(element) {
+                element.style.display = "inline-block";
+            }
+
+            function createPartition(status, size) {
+                let percent = (size * 100) / memory_size_B;
+                let height = (partitionHeightRatio * percent) + 'px';
+                let lineHeight;
+
+                if (partitionMinHeight > height)
+                    lineHeight = partitionMinHeight;
+                else
+                    lineHeight = height;
+
+                let partition = document.createElement("div");
+                partition.innerHTML = (size / size_of_MB).toFixed(2) + " MB";
+                partition.style.height = height;
+                partition.style.lineHeight = lineHeight + "px";
+                partition.classList.add("partition");
+
+                if (status === true)
+                    partition.classList.add("allocated");
+                else
+                    partition.classList.add("free");
+
+                memory.append(partition);
+            }
+
+            function clearMemory() {
+                memory.innerHTML = "";
+            }
+
+            function createProcess(queue, processID) {
+                let process = document.createElement('div');
+                process.innerHTML = "P" + processID;
+                process.classList.add("process");
+                queue.append(process);
+            }
+
+            function clearQueue(queue) {
+                queue.innerHTML = "";
+            }
+
+            const last_event = events[number_of_events - 1];
+            const last_event_systemTime = last_event.systemTime;
+
+            var hasStarted = false;
+            var simulation_period;
+            var isRunning = false;
+            var lastTime = 0;
+            var increment = 0;
+            var cursor = 0;
+            var last_event_process_arrives, last_event_process_loaded, last_event_process_terminates, last_event_process_unloaded, last_event_process_not_fit;
+            var last_events;
+            var processID, memoryMap, readyQ_event, blockedQ_event;
+            function step(time) {
+                if (increment < last_event_systemTime) {
+                    if (isRunning)
+                        window.requestAnimationFrame(step);
+                }
+                else {
+                    resetSimulation();
+                }
+
+                const elapsed = time - lastTime;
+
+                last_event_process_arrives = last_event_process_loaded = last_event_process_terminates = last_event_process_unloaded = last_event_process_not_fit = null;
+                while (cursor < number_of_events && events[cursor].systemTime <= increment) {
+                    if (events[cursor].event == "PROCESS_ARRIVES")
+                        last_event_process_arrives = events[cursor];
+                    else if (events[cursor].event == "PROCESS_LOADED")
+                        last_event_process_loaded = events[cursor];
+                    else if (events[cursor].event == "PROCESS_TERMINATES")
+                        last_event_process_terminates = events[cursor];
+                    else if (events[cursor].event == "PROCESS_UNLOADED")
+                        last_event_process_unloaded = events[cursor];
+                    else if (events[cursor].event == "PROCESS_NOT_FIT")
+                        last_event_process_not_fit = events[cursor];
+    
+                    cursor++;
+                }
+
+                last_events = new Array();
+                if (last_event_process_arrives == null) {
+                    if (last_event_process_unloaded != null)
+                        last_events.push(last_event_process_unloaded);
+                }
+                else if (last_event_process_unloaded != null) {
+                    if (last_event_process_arrives.id < last_event_process_unloaded.id)
+                        last_events.push(last_event_process_unloaded);
+                    else
+                        last_events.push(last_event_process_arrives);
+                }
+                else
+                    last_events.push(last_event_process_arrives);
+
+                if (last_event_process_terminates == null) {
+                    if (last_event_process_loaded != null)
+                        last_events.push(last_event_process_loaded);
+                }
+                else if (last_event_process_loaded != null) {
+                    if (last_event_process_terminates.id < last_event_process_loaded.id)
+                        last_events.push(last_event_process_loaded);
+                    else
+                        last_events.push(last_event_process_terminates);
+                }
+                else
+                    last_events.push(last_event_process_terminates);
+
+                if (last_event_process_not_fit != null)
+                    last_events.push(last_event_process_not_fit);
+
+                for (let index = 0; index < last_events.length - 1; index++)
+                    for (let index2 = index + 1; index2 < last_events.length; index2++)
+                        if (events[index].id > events[index2].id) {
+                            let temp = events[index];
+                            events[index] = events[index2];
+                            events[index2] = temp;
+                        }
+
+                for (let index = 0; index < last_events.length; index++) {
+                    switch (last_events[index].event) {
+                        case 'PROCESS_ARRIVES':
+                        case 'PROCESS_UNLOADED':
+                            memoryMap = [];
+                            if (last_events[index].hasOwnProperty("memoryMap"))
+                                memoryMap = last_events[index].memoryMap;
+
+                            blockedQ_event = [];
+                            if (last_events[index].hasOwnProperty("blockedQ"))
+                                blockedQ_event = last_events[index].blockedQ;
+
+                            clearMemory();
+                            for (let index2 = 0; index2 < memoryMap.length; index2++)
+                                createPartition(memoryMap[index2].inUse, memoryMap[index2].size);
+
+                            clearQueue(blockedQ);
+                            for (let index2 = 0; index2 < blockedQ_event.length; index2++)
+                                createProcess(blockedQ, blockedQ_event[index2]);
+                            break;
+                        case 'PROCESS_TERMINATES':
+                        case 'PROCESS_LOADED':
+                            readyQ_event = [];
+                            if (last_events[index].hasOwnProperty("readyQ"))
+                                readyQ_event = last_events[index].readyQ;
+
+                            blockedQ_event = [];
+                            if (last_events[index].hasOwnProperty("blockedQ"))
+                                blockedQ_event = last_events[index].blockedQ;
+
+                            clearQueue(readyQ);
+                            for (let index2 = 0; index2 < readyQ_event.length; index2++)
+                                createProcess(readyQ, readyQ_event[index2]);
+
+                            clearQueue(blockedQ);
+                            for (let index2 = 0; index2 < blockedQ_event.length; index2++)
+                                createProcess(blockedQ, blockedQ_event[index2]);
+                            break;
+                        case 'PROCESS_NOT_FIT':
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                increment += simulation_period;
+
+                if (elapsed < simulation_period) {
+                    return;
+                }
+
+                lastTime = time;
+            }
+
+            function initialiseMemory() {
+                clearMemory();
+
+                let partition = document.createElement("div");
+                partition.innerHTML = (memory_size_B / size_of_MB).toFixed(2) + " MB";
+                partition.style.height = 500 + "px";
+                partition.classList.add("partition");
+                partition.classList.add("free");
+
+                memory.append(partition);
+            }
+
+            function initialiseQueue(queue) {
+                clearQueue(queue);
+            }
+
+            function runSimulation() {
+                if (!hasStarted) {
+                    hastStarted = true;
+                    simulation_period = parseInt(inputPeriod.value);
+                    inputPeriod.disabled = true;
+                }
+
+                isRunning = true;
+                hideElement(playButton);
+                hideElement(resetButton);
+                showElement(pauseButton);
+                window.requestAnimationFrame(step);
+            }
+
+            function pauseSimulation() {
+                isRunning = false;
+                hideElement(pauseButton);
+                showElement(playButton);
+                showElement(resetButton);
+            }
+
+            function resetSimulation() {
+                showElement(playButton);
+                hideElement(pauseButton);
+                hideElement(resetButton);
+
+                inputPeriod.disabled = false;
+
+                hasStarted = false;
+                isRunning = false;
+                lastTime = 0;
+                increment = 0;
+                cursor = 0;
+
+                initialiseMemory();
+                initialiseQueue(readyQ);
+                initialiseQueue(blockedQ);
+            }
+        </script>
+    </body>
+</html>
