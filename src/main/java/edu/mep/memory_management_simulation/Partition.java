@@ -61,8 +61,8 @@ public class Partition {
 
 	@Override
 	public String toString() {
-		return "Partition [index=" + index + ", base=" + base + ", limit=" + limit + ", currentProcess="
-				+ currentProcess + ", inUse=" + inUse + "]";
+		return "Partition [index=" + index + ", base=" + base + ", limit=" + limit +
+		       ", currentProcess=" + currentProcess + ", inUse=" + inUse + "]";
 	}
 
 }

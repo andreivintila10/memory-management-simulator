@@ -66,14 +66,23 @@ public class Event {
 		switch (eventType) {
 			case PROCESS_ARRIVES:
 			case PROCESS_UNLOADED:
-				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime + ",\"processID\":" + this.processID + ",\"memoryMap\":" + this.memoryMap + ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
+				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime +
+				       ",\"processID\":" + this.processID + ",\"memoryMap\":" + this.memoryMap +
+				       ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
 			case PROCESS_TERMINATES:
 			case PROCESS_LOADED:
-				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime + ",\"processID\":" + this.processID + ",\"readyQ\":" + queueToJSON(this.readyQ) + ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
+				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime +
+				       ",\"processID\":" + this.processID + ",\"readyQ\":" + queueToJSON(this.readyQ) +
+				       ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
 			case PROCESS_NOT_FIT:
-				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime + ",\"processID\":" + this.processID + "}";
+				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime +
+				       ",\"processID\":" + this.processID + "}";
 			default:
-				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime + ",\"processID\":" + this.processID + ",\"memoryMap\":" + this.memoryMap + ",\"readyQ\":" + queueToJSON(this.readyQ) + ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
+				return "{\"id\":" + this.id + ",\"event\":\"" + this.eventType + "\",\"systemTime\":" + this.systemTime +
+				       ",\"processID\":" + this.processID + ",\"memoryMap\":" + this.memoryMap +
+				       ",\"readyQ\":" + queueToJSON(this.readyQ) + ",\"blockedQ\":" + queueToJSON(this.blockedQ) + "}";
 		}
+
 	}
+
 }

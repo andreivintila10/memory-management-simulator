@@ -11,7 +11,9 @@ public class GenerateProcesses {
 	private static final int size_of_MB = 1048576;
 
 	public static void main(String[] args) throws IOException {
-		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/memory_management_simulation/input-processes-generated.txt";
+		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/" +
+		                   "memory_management_simulation/input-processes-generated.txt";
+
 		File processesFile = new File(inputFile);
 		FileWriter fw = new FileWriter(processesFile);
 
@@ -19,20 +21,20 @@ public class GenerateProcesses {
 		random.setSeed(seed);
 
 		int noOfProcesses = 1000;
-//		int noOfProcessesRange = (int) (noOfProcessesOffset * 0.1);
+		//  int noOfProcessesRange = (int) (noOfProcessesOffset * 0.1);
 
 		int arrivalTimeRange = 200000;
-//		int arrivalTimeRange = arrivalTimeRangeInit + (int) (arrivalTimeRangeInit * 0.1);
+		//  int arrivalTimeRange = arrivalTimeRangeInit + (int) (arrivalTimeRangeInit * 0.1);
 
 		int burstTimeOffset = 2;
 		int burstTimeRange = 5000;
-//		int burstTimeRange = burstTimeRangeInit - burstTimeOffset + (int) ((burstTimeRangeInit - burstTimeOffset) * 0.1);
+		//  int burstTimeRange = burstTimeRangeInit - burstTimeOffset + (int) ((burstTimeRangeInit - burstTimeOffset) * 0.1);
 
 		int sizeOffset = size_of_MB * 2;
 		int sizeRange = size_of_MB * 2000;
-//		int sizeRange = sizeRangeInit + (int) ((sizeRangeInit - sizeOffset) * 0.01);
+		//  int sizeRange = sizeRangeInit + (int) ((sizeRangeInit - sizeOffset) * 0.01);
 
-//		int noOfProcesses = noOfProcessesOffset + random.nextInt(noOfProcessesRange);
+		//  int noOfProcesses = noOfProcessesOffset + random.nextInt(noOfProcessesRange);
 		int arrivalTime, burstTime, size;
 
 		Process process;
@@ -72,8 +74,13 @@ public class GenerateProcesses {
 		fw.close();
 
 		System.out.println();
-		System.out.printf("Numarul de procese mici [%dMB, %dMB]: %d\n", (int) (sizeOffset / size_of_MB), (int) ((limitSmallMedium - 1) / size_of_MB), noOfSmallProcesses);
-		System.out.printf("Numarul de procese medii [%dMB, %dMB]: %d\n", (int) (limitSmallMedium / size_of_MB), (int) ((limitMediumLarge - 1) / size_of_MB), noOfMediumProcesses);
-		System.out.printf("Numarul de procese mari [%dMB, %dMB]: %d\n", (int) (limitMediumLarge / size_of_MB), (int) ((sizeRange - 1) / size_of_MB), noOfLargeProcesses);
+		System.out.printf("Numarul de procese mici [%dMB, %dMB]: %d\n", (int) (sizeOffset / size_of_MB), 
+		                  (int) ((limitSmallMedium - 1) / size_of_MB), noOfSmallProcesses);
+		System.out.printf("Numarul de procese medii [%dMB, %dMB]: %d\n", (int) (limitSmallMedium / size_of_MB),
+		                  (int) ((limitMediumLarge - 1) / size_of_MB), noOfMediumProcesses);
+		System.out.printf("Numarul de procese mari [%dMB, %dMB]: %d\n", (int) (limitMediumLarge / size_of_MB),
+		                  (int) ((sizeRange - 1) / size_of_MB), noOfLargeProcesses);
+
 	}
+
 }

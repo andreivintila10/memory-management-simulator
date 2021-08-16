@@ -51,7 +51,7 @@ public class MemoryMap {
 	public boolean allocateMemory(int processId, long requiredSize, int pageSize, PageFitting pageFitting) {
 		int partitionIndex;
 
-		switch(pageFitting) {
+		switch (pageFitting) {
 			case FIRST:
 				partitionIndex = FirstFit(requiredSize);
 				break;
@@ -64,9 +64,9 @@ public class MemoryMap {
 				partitionIndex = WorstFit(requiredSize);
 				break;
 
-		    default:
-		    	partitionIndex = FirstFit(requiredSize);
-		    	break;
+			default:
+				partitionIndex = FirstFit(requiredSize);
+				break;
 		}
 
 		if (partitionIndex >= 0) {
@@ -75,8 +75,7 @@ public class MemoryMap {
 			if (partitionSize - requiredSize < pageSize) {
 				partition.setCurrentProcess(processId);
 				partition.setInUse(true);
-			}
-			else {
+			} else {
 				long newPartitionLimit = partition.getLimit();
 
 				long pagesRequired = (int) Math.ceil((double) requiredSize / pageSize);
@@ -90,12 +89,14 @@ public class MemoryMap {
 				long newPartitionBase = partitionLimit + 1;
 				int newPartitionCurrentProcess = 0;
 				boolean newPartitionInUse = false;
-				Partition newPartition = new Partition(newPartitionIndex, newPartitionBase, newPartitionLimit, newPartitionCurrentProcess, newPartitionInUse);
+				Partition newPartition = new Partition(newPartitionIndex, newPartitionBase, newPartitionLimit,
+				                                       newPartitionCurrentProcess, newPartitionInUse);
 				for (int index = newPartitionIndex; index < memorySpace.size(); index++) {
 					Partition tempPartition = memorySpace.get(index);
 					tempPartition.setIndex(index + 1);
 					memorySpace.set(index, tempPartition);
 				}
+
 				memorySpace.set(partitionIndex, partition);
 				memorySpace.add(newPartitionIndex, newPartition);
 			}
@@ -110,30 +111,31 @@ public class MemoryMap {
 		Partition currentPartition;
 		int randomValue, currentProcess;
 		boolean ok;
+
 		do {
 			ok = true;
 			randomValue = randomPage.nextInt(noOfPartitions);
 			currentPartition = memorySpace.get(randomValue);
 			currentProcess = currentPartition.getCurrentProcess();
+
 			for (int index = 0; index < runningProcesses.length; index++)
 				if (runningProcesses[index].getId() == currentProcess) {
 					ok = false;
 					break;
 				}
+
 		} while (!currentPartition.isInUse() || !ok);
 
 		return currentProcess;
 	}
-	
+
 	public void deallocateMemory(int processId) {
 		int partitionIndex = 0;
-		for (Partition partition : memorySpace) {
+		for (Partition partition : memorySpace)
 			if (partition.getCurrentProcess() == processId) {
-				
 				partitionIndex = partition.getIndex();
 				break;
 			}
-		}
 
 		Partition currentPartition = memorySpace.get(partitionIndex);
 		currentPartition.setCurrentProcess(0);
@@ -148,6 +150,7 @@ public class MemoryMap {
 					tempPartition.setIndex(index - 1);
 					memorySpace.set(index, tempPartition);
 				}
+
 				memorySpace.remove(partitionIndex);
 				partitionIndex--;
 				currentPartition = prevPartition;
@@ -163,6 +166,7 @@ public class MemoryMap {
 					tempPartition.setIndex(index - 1);
 					memorySpace.set(index, tempPartition);
 				}
+
 				memorySpace.remove(partitionIndex);
 			}
 		}
@@ -173,10 +177,12 @@ public class MemoryMap {
 		long currentPartitionSize;
 		int noOfPartitions = memorySpace.size();
 		int index = 0;
+
 		while (index < memorySpace.size()) {
 			currentPartition = memorySpace.get(index);
 			if (!currentPartition.isInUse() && index < noOfPartitions - 1) {
 				currentPartitionSize = currentPartition.getSize();
+
 				for (int index2 = index + 1; index2 < noOfPartitions; index2++) {
 					tempPartition = memorySpace.get(index2);
 					tempPartition.setIndex(index2 - 1);
@@ -196,6 +202,7 @@ public class MemoryMap {
 					int newIndex = noOfPartitions - 2;
 					long newBase = secondToLastPartition.getBase();
 					long newLimit = lastPartition.getLimit();
+
 					Partition newPartition = new Partition(newIndex, newBase, newLimit, 0, false);
 					memorySpace.set(newIndex, newPartition);
 					memorySpace.remove(noOfPartitions - 1);
@@ -212,7 +219,7 @@ public class MemoryMap {
 		for (Partition partition : memorySpace)
 			if (partition.isInUse() && partition.getCurrentProcess() == processID)
 				return true;
-			
+
 		return false;
 	}
 
@@ -227,8 +234,11 @@ public class MemoryMap {
 	public String toJSON() {
 		String jsonString = "[";
 		for (Partition partition : memorySpace) {
-			jsonString += "{\"index\":" + partition.getIndex() + ",\"base\":" + partition.getBase() + ",\"limit\":" + partition.getLimit() + ",\"size\":" + partition.getSize() + ",\"process\":" + partition.getCurrentProcess() + ",\"inUse\":" + partition.isInUse() + "},";                              
+			jsonString += "{\"index\":" + partition.getIndex() + ",\"base\":" + partition.getBase() + ",\"limit\":" +
+			              partition.getLimit() + ",\"size\":" + partition.getSize() + ",\"process\":" +
+			              partition.getCurrentProcess() + ",\"inUse\":" + partition.isInUse() + "},";
 		}
+
 		jsonString = jsonString.substring(0, jsonString.length() - 1);
 		jsonString += "]";
 
@@ -244,6 +254,7 @@ public class MemoryMap {
 			else
 				output += ": Free frame(s)\n";
 		}
+
 		return output + "\n";
 	}
 

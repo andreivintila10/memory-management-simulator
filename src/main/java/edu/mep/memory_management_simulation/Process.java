@@ -154,7 +154,8 @@ public class Process {
 	}
 
 	public String toString() {
-		return "Process [id=" + this.id + ", size=" + this.size + ", arrivalTime=" + this.arrivalTime + ", burstTime=" + this.burstTime + ", status=" + this.status + "]";
+		return "Process [id=" + this.id + ", size=" + this.size + ", arrivalTime=" + this.arrivalTime +
+		       ", burstTime=" + this.burstTime + ", status=" + this.status + "]";
 	}
 
 }

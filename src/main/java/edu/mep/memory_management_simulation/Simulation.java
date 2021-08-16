@@ -20,7 +20,8 @@ public class Simulation {
 	private int notFitted = 0;
 
 	public ArrayList<Process> getProcesses() throws FileNotFoundException {
-		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/memory_management_simulation/input-processes-generated.txt";
+		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/" +
+		                   "memory_management_simulation/input-processes-generated.txt";
 
 		ArrayList<Process> processes = new ArrayList<Process>();
 		Process process = null;
@@ -84,8 +85,10 @@ public class Simulation {
 	}
 
 	public void saveSimulationHistory(ArrayList<Event> events) throws IOException {
-		String inputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/memory_management_simulation/web/js/simulation-history.js";
-		File processesFile = new File(inputFile);
+		String outputFile = "/home/andrei/eclipse-workspace/memory-management-simulator/src/main/java/edu/mep/" +
+		                    "memory_management_simulation/web/js/simulation-history.js";
+
+		File processesFile = new File(outputFile);
 		FileWriter fw = new FileWriter(processesFile);
 		fw.write(eventsToJSON(events));
 		fw.close();
@@ -102,13 +105,13 @@ public class Simulation {
 		Queue<Process> readyQ = new LinkedList<Process>();
 
 		Process[] cpuProcesses = new Process[simulation.noOfParallelProcesses];
-	    int[] currentTimeSlices = new int[simulation.noOfParallelProcesses];
+		int[] currentTimeSlices = new int[simulation.noOfParallelProcesses];
 
-	    Random randomPage = new Random();
-	    randomPage.setSeed(172);
+		Random randomPage = new Random();
+		randomPage.setSeed(172);
 
 		try {
-			ArrayList <Process> processes = simulation.getProcesses();
+			ArrayList<Process> processes = simulation.getProcesses();
 			for (Process process : processes)
 				System.out.println(process);
 
@@ -123,10 +126,11 @@ public class Simulation {
 						process.setEnterBlockedQTime(systemTime);
 						blockedQ.add(process);
 
-						event = new Event(EventType.PROCESS_ARRIVES, systemTime, process.getId(), memoryManager.getMemory().toJSON(), (Queue<Process>) new LinkedList<Process>(blockedQ));
+						event = new Event(EventType.PROCESS_ARRIVES, systemTime, process.getId(),
+						                  memoryManager.getMemory().toJSON(),
+						                  (Queue<Process>) new LinkedList<Process>(blockedQ));
 						events.add(event);
-					}
-					else {
+					} else {
 						System.out.println("Process " + process.getId() + " cannot be fitted into memory");
 						event = new Event(EventType.PROCESS_NOT_FIT, systemTime, process.getId());
 						events.add(event);
@@ -136,20 +140,26 @@ public class Simulation {
 
 				Process unblockedProcess = simulation.getUnblockedProcess(blockedQ);
 				if (unblockedProcess != null) {
-					unblockedProcess.setResponseTime(unblockedProcess.getResponseTime() + systemTime - unblockedProcess.getEnterBlockedQTime());
+					unblockedProcess.setResponseTime(unblockedProcess.getResponseTime() + systemTime -
+					                                 unblockedProcess.getEnterBlockedQTime());
+
 					if (unblockedProcess.getStatus() == Status.READY) {
 						unblockedProcess.setEnterReadyQTime(systemTime);
 						readyQ.add(unblockedProcess);
 						System.out.println("Process " + unblockedProcess.getId() + " enters ready queue at t=" + systemTime);
-						event = new Event(EventType.PROCESS_LOADED, systemTime, unblockedProcess.getId(), (Queue<Process>) new LinkedList<Process>(readyQ), (Queue<Process>) new LinkedList<Process>(blockedQ));
+						event = new Event(EventType.PROCESS_LOADED, systemTime, unblockedProcess.getId(),
+						                  (Queue<Process>) new LinkedList<Process>(readyQ),
+						                  (Queue<Process>) new LinkedList<Process>(blockedQ));
+
 						events.add(event);
-					}
-					else if (unblockedProcess.getStatus() == Status.TERMINATED) {
+					} else if (unblockedProcess.getStatus() == Status.TERMINATED) {
 						System.out.println("Process " + unblockedProcess.getId() + " freed from memory at t=" + systemTime);
 						memoryManager.deallocateMemory(unblockedProcess);
 						memoryManager.printMemoryMap();
+						event = new Event(EventType.PROCESS_UNLOADED, systemTime, unblockedProcess.getId(),
+						                  memoryManager.getMemory().toJSON(),
+						                  (Queue<Process>) new LinkedList<Process>(blockedQ));
 
-						event = new Event(EventType.PROCESS_UNLOADED, systemTime, unblockedProcess.getId(), memoryManager.getMemory().toJSON(), (Queue<Process>) new LinkedList<Process>(blockedQ));
 						events.add(event);
 					}
 				}
@@ -160,9 +170,7 @@ public class Simulation {
 							Process cpuProcess = readyQ.remove();
 							cpuProcess.setStatus(Status.RUNNING);
 							cpuProcesses[core] = cpuProcess;
-
-						}
-						else
+						} else
 							continue;
 					}
 
@@ -171,12 +179,16 @@ public class Simulation {
 						if (cpuProcesses[core].hasTerminated()) {
 							cpuProcesses[core].setStatus(Status.TERMINATED);
 							cpuProcesses[core].setTurnaroundTime(systemTime - cpuProcesses[core].getArrivalTime());
-							cpuProcesses[core].setWaitTime(systemTime - cpuProcesses[core].getEnterReadyQTime() - cpuProcesses[core].getBurstTime());
 							cpuProcesses[core].setEnterBlockedQTime(systemTime);
+							cpuProcesses[core].setWaitTime(systemTime - cpuProcesses[core].getEnterReadyQTime() -
+							                               cpuProcesses[core].getBurstTime());
+
 							blockedQ.add(cpuProcesses[core]);
 							System.out.println("Process " + cpuProcesses[core].getId() + " terminates at t=" + systemTime);
+							event = new Event(EventType.PROCESS_TERMINATES, systemTime, cpuProcesses[core].getId(),
+							                  (Queue<Process>) new LinkedList<Process>(readyQ),
+							                  (Queue<Process>) new LinkedList<Process>(blockedQ));
 
-							event = new Event(EventType.PROCESS_TERMINATES, systemTime, cpuProcesses[core].getId(), (Queue<Process>) new LinkedList<Process>(readyQ), (Queue<Process>) new LinkedList<Process>(blockedQ));
 							events.add(event);
 
 							currentTimeSlices[core] = 0;
@@ -191,7 +203,6 @@ public class Simulation {
 					}
 
 					currentTimeSlices[core]++;
-
 				}
 
 				systemTime++;
@@ -202,7 +213,6 @@ public class Simulation {
 			int index = 0;
 			for (Event event1 : events) {
 				event1.setId(index);
-				// System.out.println(event1.toJSON());
 				index++;
 			}
 
